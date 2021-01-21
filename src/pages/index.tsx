@@ -16,7 +16,7 @@ const Home = () => {
     addBookmark,
     { loading: mutationLoading, data: mutationData, error: mutationError },
   ] = useMutation(ADD_BOOKMARK)
-
+  console.log(mutationData && mutationData)
   const onTaskAddedHandler = () => {
     setModalOpen(false)
     addBookmark({ variables: { title, link } })

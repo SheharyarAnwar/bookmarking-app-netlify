@@ -1,8 +1,13 @@
-import { ApolloClient, InMemoryCache } from "@apollo/client"
-
-export const createApolloClientWithTokenContext = () => {
+import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client"
+import fetch from "isomorphic-fetch"
+const link = new HttpLink({
+  uri: "/.netlify/functions/create",
+  fetch,
+})
+export const createApolloClient = () => {
   return new ApolloClient({
-    uri: "/.netlify/functions/create",
     cache: new InMemoryCache(),
+
+    link,
   })
 }
