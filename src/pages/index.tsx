@@ -7,19 +7,29 @@ import { ADD_BOOKMARK, GET_BOOKMARKS } from "../Apollo/queries"
 const Home = () => {
   const wrapperRef = React.createRef<HTMLDivElement>()
   const [modalOpen, setModalOpen] = useState<boolean>(false)
-  const [data, setData] = useState<BookmarkT[]>([
-    { title: "Am", link: "http://fb.com" },
-  ])
+  const [data, setData] = useState<BookmarkT[]>([])
   const [title, setTitle] = useState<string>("")
   const [link, setLink] = useState<string>("")
   const [
     addBookmark,
     { loading: mutationLoading, data: mutationData, error: mutationError },
   ] = useMutation(ADD_BOOKMARK)
-  console.log(mutationData && mutationData)
+  const { data: qData, error: qError, loading: qLoading } = useQuery(
+    GET_BOOKMARKS
+  )
+  useEffect(() => {
+    qData && setData(qData.bookmarks)
+  }, [qData])
+  useEffect(() => {
+    mutationData && setData(prev => [mutationData.addBookmark, ...prev])
+    console.log(mutationData)
+  }, [mutationData])
+
   const onTaskAddedHandler = () => {
     setModalOpen(false)
     addBookmark({ variables: { title, link } })
+    setTitle("")
+    setLink("")
   }
   const tasks = data.map((val, i) => <Bookmark key={i} {...val} />)
   return (
@@ -30,7 +40,9 @@ const Home = () => {
 
       <div className={classes.root}>
         <div className={classes.tasks}>
-          {tasks && tasks.length <= 0 ? (
+          {qLoading || mutationLoading ? (
+            <p style={{ textAlign: "center" }}>Loading . . .</p>
+          ) : tasks && tasks.length <= 0 ? (
             <p style={{ marginTop: "10%", textAlign: "center" }}>
               No Bookmarks To Show
             </p>
@@ -51,15 +63,17 @@ const Home = () => {
         }}
       >
         <div className={classes.modal}>
-          <h4>Tilte</h4>
+          <h4>Add Bookmark</h4>
+          <h5>Title</h5>
           <input
             placeholder="Click To Add Title"
             value={title}
             onChange={e => setTitle(e.target.value)}
             type="text"
           ></input>
+          <h5>Link</h5>
           <input
-            placeholder="Click To Add Link"
+            placeholder="Link (e.g xxxx.com)"
             value={link}
             onChange={e => setLink(e.target.value)}
             type="text"

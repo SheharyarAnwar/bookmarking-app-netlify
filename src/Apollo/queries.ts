@@ -10,7 +10,7 @@ export const GET_BOOKMARKS = gql`
 `
 export const ADD_BOOKMARK = gql`
   mutation($title: String!, $link: String!) {
-    addTodo(title: $title, link: $link) {
+    addBookmark(title: $title, link: $link) {
       link
       title
     }
